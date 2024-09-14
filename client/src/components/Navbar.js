@@ -3,18 +3,18 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 function Navbar() {
-    const [cookies, setCookie, removeCookie] = useCookies(['buyer_id']);
-    const [buyerId, setBuyerId] = useState(null);
+    const [cookies, setCookie, removeCookie] = useCookies(['user_id']);
+    const [userId, setBuyerId] = useState(null);
     const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false); // Dropdown toggle state
     const navigate = useNavigate(); // For redirection after logout
 
 
     useEffect(() => {
         
-        if (cookies.buyer_id) {
-            setBuyerId(cookies.buyer_id); // Set buyerId from cookies
+        if (cookies.user_id) {
+            setBuyerId(cookies.user_id); // Set userId from cookies
         }
-    }, [cookies.buyer_id]);
+    }, [cookies.user_id]);
 
     // Toggle the account dropdown visibility
     const toggleAccountDropdown = () => {
@@ -23,13 +23,13 @@ function Navbar() {
 
     // Handle user logout and redirect to login page
     const handleLogout = () => {
-        removeCookie('buyer_id', { path: '/' });  // Ensure cookie is removed
-        setBuyerId(null);          // Clear buyerId state immediately
+        removeCookie('user_id', { path: '/' });  // Ensure cookie is removed
+        setBuyerId(null);          // Clear userId state immediately
         navigate('/login', { replace: true });  // Force redirect to login page
     };
     function signOut() {
         console.log("Sign Out");
-        removeCookie('buyer_id',);
+        removeCookie('user_id',);
         removeCookie('AuthToken');
         window.location.reload();
       }
@@ -95,9 +95,9 @@ function Navbar() {
                     </li>
                     
                     <li>
-                        {/* Cart button that dynamically uses buyerId */}
-                        {buyerId ? (
-                            <Link to={`/cart/${buyerId}`} className="flex flex-row hover:text-[#000] cursor-pointer">
+                        {/* Cart button that dynamically uses userId */}
+                        {userId ? (
+                            <Link to={`/cart/${userId}`} className="flex flex-row hover:text-[#000] cursor-pointer">
                             <svg 
                                 xmlns="http://www.w3.org/2000/svg" 
                                 width="22" 

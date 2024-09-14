@@ -37,13 +37,13 @@ app.get('/products', async (req, res) => {
     }
 });
 
-app.get('/cart/:buyer_id', async (req, res) => {
-    const buyerId = parseInt(req.params.buyer_id, 10);
+app.get('/cart/:user_id', async (req, res) => {
+    const userId = parseInt(req.params.user_id, 10);
 
-    console.log('Received buyer_id:', buyerId);
+    console.log('Received user_id:', userId);
 
-    if (isNaN(buyerId)) {
-        return res.status(400).json({ error: 'Invalid buyer_id' });
+    if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user_id' });
     }
 
     try {
@@ -52,10 +52,10 @@ app.get('/cart/:buyer_id', async (req, res) => {
             SELECT products.product_name, products.price, products.description, products.imageurl, cart.quantity, cart.product_id
             FROM cart
             JOIN products ON cart.product_id = products.id
-            WHERE cart.buyer_id = $1
+            WHERE cart.user_id = $1
         `;
 
-        const cartItems = await client.query(query, [buyerId]);
+        const cartItems = await client.query(query, [userId]);
         client.release(); // Release the client back to the pool
 
         res.json({
@@ -72,12 +72,13 @@ app.get('/cart/:buyer_id', async (req, res) => {
 
 // Example route for adding an item to the cart
 app.post('/cart/add', async (req, res) => {
-    const { buyer_id, product_id, quantity } = req.body;
+    const { user_id, product_id, quantity } = req.body;
+    console.log('Request Body:', req.body);
   
     try {
       const result = await pool.query(
-        'INSERT INTO cart (buyer_id, product_id, quantity) VALUES ($1, $2, $3) ON CONFLICT (buyer_id, product_id) DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity',
-        [buyer_id, product_id, quantity]
+        'INSERT INTO cart (user_id, product_id, quantity) VALUES ($1, $2, $3) ON CONFLICT (user_id, product_id) DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity',
+        [user_id, product_id, quantity]
       );
       res.status(200).json({ message: 'Product added to cart' });
     } catch (error) {
@@ -88,17 +89,17 @@ app.post('/cart/add', async (req, res) => {
   
 
 // Remove product from cart endpoint
-app.delete('/cart/:buyer_id/:product_id', async (req, res) => {
-    const { buyer_id, product_id } = req.params;
+app.delete('/cart/:user_id/:product_id', async (req, res) => {
+    const { user_id, product_id } = req.params;
 
-    if (!buyer_id || !product_id) {
-        return res.status(400).json({ message: 'Missing buyer_id or product_id' });
+    if (!user_id || !product_id) {
+        return res.status(400).json({ message: 'Missing user_id or product_id' });
     }
 
     try {
         const result = await pool.query(
-            'DELETE FROM cart WHERE buyer_id = $1 AND product_id = $2',
-            [buyer_id, product_id]
+            'DELETE FROM cart WHERE user_id = $1 AND product_id = $2',
+            [user_id, product_id]
         );
 
         if (result.rowCount > 0) {
@@ -123,9 +124,9 @@ app.post('/signup', async(req, res) => {
         const signup = await pool.query("INSERT INTO users (email, password, role) VALUES($1, $2, $3) RETURNING id",
             [email, hashedPassword, role]);
         
-        const buyer_id = signup.rows[0].id; 
+        const user_id = signup.rows[0].id; 
         const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
-        res.json({ email, token, buyer_id });
+        res.json({ email, token, user_id });
 
     } catch (err) {
         console.error(err);
@@ -150,10 +151,10 @@ app.post('/login', async(req, res) => {
         if(!users.rows.length) return res.json({ detail: "User does not exist!" });
 
         const success = await bcrypt.compare(password, users.rows[0].password);
-        const token = jwt.sign({ email, buyer_id: users.rows[0].id }, 'secret', { expiresIn: '1hr' });
+        const token = jwt.sign({ email, user_id: users.rows[0].id }, 'secret', { expiresIn: '1hr' });
         
         if(success) {
-            res.json({ 'email' : users.rows[0].email, token, buyer_id: users.rows[0].id });
+            res.json({ 'email' : users.rows[0].email, token, user_id: users.rows[0].id });
         
         } else {
             res.json({ detail:  "Login failed" });

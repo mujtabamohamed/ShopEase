@@ -12,7 +12,7 @@ function Auth() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
-  const [role, setRole] = useState('buyer');
+  const [role, setRole] = useState(null);
 
   const [error, setError] = useState(null);
 
@@ -51,7 +51,7 @@ function Auth() {
       setCookie('Email', data.email);
       setCookie('AuthToken', data.token);
       setCookie('Role', role);
-      setCookie('buyer_id', data.buyer_id);
+      setCookie('user_id', data.user_id);
 
       window.location.reload();
     }

@@ -6,7 +6,7 @@ import ProductCard from "../components/ProductCard";
 function Home() {
 
   const [products, setProducts] = useState([]);
-  const [cookies] = useCookies(['buyer_id']);
+  const [cookies] = useCookies(['user_id']);
   const [message, setMessage] = useState('');
 
   const [selectedCategory, setSelectedCategory] = useState(''); // Add state for selected category
@@ -28,14 +28,14 @@ function Home() {
 
     // Function to handle adding products to the cart
     const handleAddToCart = async (productId) => {
-      if (!cookies.buyer_id) {
+      if (!cookies.user_id) {
         setMessage("You need to log in to add items to the cart");
         return;
       }
   
       try {
         const response = await axios.post(`http://localhost:8000/cart/add`, {
-          buyer_id: cookies.buyer_id,
+          user_id: cookies.user_id,
           product_id: productId,
           quantity: 1  // Default quantity is 1
         });

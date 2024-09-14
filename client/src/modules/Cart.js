@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 function Cart() {
-    const { buyer_id } = useParams();
+    const { user_id } = useParams();
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        console.log("Buyer ID from URL:", buyer_id);
-        if (!buyer_id) {
-            setError('Invalid buyerId');
+        console.log("User ID from URL:", user_id);
+        if (!user_id) {
+            setError('Invalid userId');
             setLoading(false);
             return;
         }
 
         const fetchCartItems = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/cart/${buyer_id}`);
+                const response = await fetch(`http://localhost:8000/cart/${user_id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch cart items');
                 }
@@ -37,7 +37,7 @@ function Cart() {
         };
 
         fetchCartItems();
-    }, [buyer_id]);
+    }, [user_id]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -48,7 +48,7 @@ function Cart() {
         console.log("Removing product ID:", productId);
 
         try {
-            const response = await fetch(`http://localhost:8000/cart/${buyer_id}/${productId}`,{
+            const response = await fetch(`http://localhost:8000/cart/${user_id}/${productId}`,{
               method: "DELETE"
           });
             
