@@ -19,7 +19,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/cart" element={<Cart />} /> {/* Cart route */}
+              <Route path="/cart/:buyer_id" element={<Cart />} />
             </Routes>
           </Router>
         </>

@@ -1,95 +1,136 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-function CartPage() {
-
+function Cart() {
+    const { buyer_id } = useParams();
     const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-      // Fetch products from the backend
-      const fetchCart = async () => {
-        try {
-            const response = await axios.get(`http://localhost:8000/cart`);
-            setCartItems(response.data);
-        } catch (error) {
-            console.error('Error fetching products:', error);
+        console.log("Buyer ID from URL:", buyer_id);
+        if (!buyer_id) {
+            setError('Invalid buyerId');
+            setLoading(false);
+            return;
         }
-      };
-  
-      fetchCart();
-    }, []);
+
+        const fetchCartItems = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/cart/${buyer_id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch cart items');
+                }
+                const data = await response.json();
+                console.log("Cart items data:", data.items);
+
+                const itemsWithQuantity = data.items.map(item => ({
+                    ...item,
+                    quantity: item.quantity || 1,
+                }));
+                setCartItems(itemsWithQuantity);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCartItems();
+    }, [buyer_id]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
 
-  // Function to handle quantity change
-  const handleQuantityChange = (id, delta) => {
-    const updatedCart = cartItems.map((item) =>
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+    // Function to handle removing item from cart
+    const handleRemoveItem = async (productId) => {
+        console.log("Removing product ID:", productId);
+
+        try {
+            const response = await fetch(`http://localhost:8000/cart/${buyer_id}/${productId}`,{
+              method: "DELETE"
+          });
+            
+            if(response.status === 200) {
+                const updatedCart = cartItems.filter(item => item.product_id !== productId);
+                setCartItems(updatedCart);
+
+            } else {
+                console.error('Error removing item from cart');
+            }
+      
+          } catch (err) {
+            console.error('Error removing item from cart:', error);
+          }
+        }
+        
+
+    // Calculate the total price
+    const getTotalPrice = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+    };
+
+    return (
+        <div className="bg-[#fff] text-gray-100 min-h-screen ">
+            {/* Cart Section */}
+            <section className="py-20 text-center bg-[#fff]">
+                <div className="flex flex-col container mx-auto text-center">
+                
+                <div className="flex flex-col gap-4 justify-center mx-auto">
+                    <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-24">SHOPPING BAG</h1>
+
+                    {cartItems.map((item) => (
+                    <div key={item.product_id} className="flex items-start pb-6 border-b justify-between">
+                        <div className="flex">
+                        <img
+                            src={item.imageurl || 'https://via.placeholder.com/200'}
+                            alt={item.product_name}
+                            className="w-36 h-36 object-cover rounded-xl"
+                        />
+                        <div className="text-left w-full ml-16">
+                            <h1 className="text-2xl font-bold text-[#3a3a3a] whitespace-nowrap">{item.product_name}</h1>
+                            <p className="text-md text-[#707070] mt-1">Quantity: {item.quantity}</p>
+                            <p className="text-xl font-bold text-[#3a3a3a] mt-2">₹{item.price}</p>
+                        </div>
+                        </div>
+
+                        {/* Delete Icon */}
+                        <div className="ml-36 flex-shrink-0 flex items-center">
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="24" 
+                                height="24" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                stroke="#3a3a3a" 
+                                strokeWidth="1" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                className="lucide lucide-x hover:stroke-[#000] cursor-pointer"
+                                onClick={() => handleRemoveItem(item.product_id)}>
+                                <path d="M18 6 6 18"/>
+                                <path d="m6 6 12 12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+
+                {/* Cart Summary */}
+                <div className="mt-8 p-4 justify-center">
+                    <h3 className="text-xl font-semibold text-[#3a3a3a]">
+                    Total Price: ₹{getTotalPrice()}
+                    </h3>
+                    <button className="mt-2 bg-[#53742c] hover:bg-[#466325] text-white px-4 py-2 rounded-full text-md">
+                    Proceed to Checkout
+                    </button>
+                </div>
+                </div>
+            </section>
+            </div>
+
     );
-    setCartItems(updatedCart);
-  };
-
-  // Calculate the total price
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-  };
-
-  return (
-    <div className="bg-[#f3f3f3] text-gray-100 min-h-screen">
-
-      {/* Cart Section */}
-      <section className="py-20 text-center bg-[#f3f3f3]">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 text-[#3a3a3a]">Your Cart</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-12 gap-4">
-
-            {cartItems.map((item) => (
-              <div key={item.id} className="w-72 bg-white p-4 rounded-lg shadow-md text-left">
-                <img
-                  src={item.imageUrl}
-                  alt={item.productName}
-                  className="w-full h-54 object-cover rounded-xl"
-                />
-                <div className="flex justify-between items-center mt-2">
-                  <h4 className="text-xl font-semibold text-[#3a3a3a]">{item.productName}</h4>
-                  <p className="text-[21px] text-[#3a3a3a] font-bold">${item.price}</p>
-                </div>
-                <p className="text-sm text-[#707070]">Quantity: {item.quantity}</p>
-
-                {/* Quantity Control */}
-                <div className="flex items-center space-x-2 mt-4">
-                  <button
-                    className="bg-[#53742c] text-white px-3 py-1 rounded-full"
-                    onClick={() => handleQuantityChange(item.id, -1)}
-                  >
-                    -
-                  </button>
-                  <span className="text-xl font-semibold text-[#3a3a3a]">{item.quantity}</span>
-                  <button
-                    className="bg-[#53742c] text-white px-3 py-1 rounded-full"
-                    onClick={() => handleQuantityChange(item.id, 1)}
-                  >
-                    +
-                  </button>
-                </div>
-
-                <button className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md">
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Cart Summary */}
-          <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold text-[#3a3a3a]">Total Price: ${getTotalPrice()}</h3>
-            <button className="mt-4 bg-[#53742c] hover:bg-[#466325] text-white px-6 py-3 rounded-full text-lg">
-              Proceed to Checkout
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
 }
 
-export default CartPage;
+export default Cart;

@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 import pool from "./db.js";
 
-
 const app = express();
 const PORT = process.env.PORT ?? 8000;
 
@@ -38,41 +37,95 @@ app.get('/products', async (req, res) => {
     }
 });
 
-app.get('/cart', async (req, res) => {
-    const buyer_id = req.query.buyer_id;  // Assuming you're passing the buyer_id as a query param
+app.get('/cart/:buyer_id', async (req, res) => {
+    const buyerId = parseInt(req.params.buyer_id, 10);
+
+    console.log('Received buyer_id:', buyerId);
+
+    if (isNaN(buyerId)) {
+        return res.status(400).json({ error: 'Invalid buyer_id' });
+    }
 
     try {
         const client = await pool.connect();
-
-        // Join cart and products to get product details
         const query = `
-            SELECT products.name, products.price, products.description
+            SELECT products.product_name, products.price, products.description, products.imageurl, cart.quantity, cart.product_id
             FROM cart
             JOIN products ON cart.product_id = products.id
             WHERE cart.buyer_id = $1
         `;
-        const cartItems = await client.query(query, [buyer_id]);
 
-        res.json(cartItems.rows);
+        const cartItems = await client.query(query, [buyerId]);
+        client.release(); // Release the client back to the pool
+
+        res.json({
+            success: true,
+            items: cartItems.rows
+        });
 
     } catch (err) {
-        console.error(err); 
+        console.error('Error retrieving cart items:', err); 
         res.status(500).json({ error: 'Failed to retrieve cart items' });
     }
 });
 
 
+// Example route for adding an item to the cart
+app.post('/cart/add', async (req, res) => {
+    const { buyer_id, product_id, quantity } = req.body;
+  
+    try {
+      const result = await pool.query(
+        'INSERT INTO cart (buyer_id, product_id, quantity) VALUES ($1, $2, $3) ON CONFLICT (buyer_id, product_id) DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity',
+        [buyer_id, product_id, quantity]
+      );
+      res.status(200).json({ message: 'Product added to cart' });
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      res.status(500).json({ message: 'Failed to add product to cart' });
+    }
+  });
+  
+
+// Remove product from cart endpoint
+app.delete('/cart/:buyer_id/:product_id', async (req, res) => {
+    const { buyer_id, product_id } = req.params;
+
+    if (!buyer_id || !product_id) {
+        return res.status(400).json({ message: 'Missing buyer_id or product_id' });
+    }
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM cart WHERE buyer_id = $1 AND product_id = $2',
+            [buyer_id, product_id]
+        );
+
+        if (result.rowCount > 0) {
+            return res.status(200).json({ message: 'Item removed from cart' });
+        } else {
+            return res.status(404).json({ message: 'Item not found in cart' });
+        }
+    } catch (error) {
+        console.error('Error removing item from cart:', error);
+        return res.status(500).json({ message: 'Failed to remove item from cart' });
+    }
+});
+
+
+// sign up
 
 app.post('/signup', async(req, res) => {
     const { email, password, role } = req.body;
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     try {
-        const signup = await pool.query("INSERT INTO users (email, password, role) VALUES($1, $2, $3)",
+        const signup = await pool.query("INSERT INTO users (email, password, role) VALUES($1, $2, $3) RETURNING id",
             [email, hashedPassword, role]);
         
+        const buyer_id = signup.rows[0].id; 
         const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
-        res.json({email, token});
+        res.json({ email, token, buyer_id });
 
     } catch (err) {
         console.error(err);
@@ -85,6 +138,7 @@ app.post('/signup', async(req, res) => {
     }
 });
 
+
 // login
 
 app.post('/login', async(req, res) => {
@@ -96,20 +150,20 @@ app.post('/login', async(req, res) => {
         if(!users.rows.length) return res.json({ detail: "User does not exist!" });
 
         const success = await bcrypt.compare(password, users.rows[0].password);
-        const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
+        const token = jwt.sign({ email, buyer_id: users.rows[0].id }, 'secret', { expiresIn: '1hr' });
         
         if(success) {
-            res.json({ 'email' : users.rows[0].email, token});
+            res.json({ 'email' : users.rows[0].email, token, buyer_id: users.rows[0].id });
         
         } else {
             res.json({ detail:  "Login failed" });
         }
 
-
     } catch (err) {
         console.error(err);
     }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server running on PORT ${PORT}`);

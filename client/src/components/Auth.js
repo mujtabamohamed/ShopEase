@@ -51,6 +51,7 @@ function Auth() {
       setCookie('Email', data.email);
       setCookie('AuthToken', data.token);
       setCookie('Role', role);
+      setCookie('buyer_id', data.buyer_id);
 
       window.location.reload();
     }

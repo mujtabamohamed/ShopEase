@@ -13,6 +13,12 @@ module.exports = {
         '4xl': '1820px',
       },
       extend: {
+
+        fontFamily: {
+          inter: ['Inter', 'sans-serif'],
+          space_grotesk : ['Space Grotesk', 'sans-serif'],
+          work_sans : ['Work Sans', 'sans-serif'],
+      },
         
         spacing: {
           '108': '26rem',
