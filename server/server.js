@@ -114,6 +114,93 @@ app.delete('/cart/:user_id/:product_id', async (req, res) => {
 });
 
 
+app.get('/dashboard/:user_id', async (req, res) => {
+    const userId = parseInt(req.params.user_id, 10);
+
+    console.log('Received user_id:', userId);
+
+    if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user_id' });
+    }
+
+    try {
+        const client = await pool.connect();
+        const query = `
+            SELECT products.id, products.product_name, products.category, products.description, products.price, products.imageurl
+            FROM users
+            JOIN products ON users.id = products.user_id
+            WHERE users.id = $1
+        `;
+
+        const sellerItems = await client.query(query, [userId]);
+        client.release(); // Release the client back to the pool
+
+        res.json({
+            success: true,
+            items: sellerItems.rows
+        });
+
+    } catch (err) {
+        console.error('Error retrieving products:', err); 
+        res.status(500).json({ error: 'Failed to retrieve products' });
+    }
+});
+
+app.post('/dashboard/:user_id/add', async(req, res) => {
+    const userId = parseInt(req.params.user_id, 10);
+    const { product_name, category, description, price, imageurl } = req.body;
+    console.log('Received user_id:', userId);
+
+    if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user_id' });
+    }
+
+    if (!product_name || !category || !description || !price || !imageurl) {
+        return res.status(400).json({ error: 'All fields are required.' });
+      }    
+
+    try {
+        const newProduct =  
+        await pool.query(
+            'INSERT INTO products(user_id, product_name, category, description, price, imageurl) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
+            [userId, product_name, category, description, price, imageurl]);
+
+        res.status(201).json(newProduct.rows[0]);
+
+    } catch (err) {
+        console.error('Database insert error:', err);
+        return res.status(500).json({ error: 'Failed to add product' });
+    }
+})
+
+
+app.delete('/dashboard/:user_id/delete/:product_id', async (req, res) => {
+    const { user_id, product_id } = req.params;
+  
+    if (isNaN(user_id) || isNaN(product_id)) {
+      return res.status(400).json({ error: 'Invalid user_id or product_id' });
+    }
+  
+    try {
+      const result = await pool.query(
+        'DELETE FROM products WHERE user_id = $1 AND id = $2',
+        [user_id, product_id]
+      );
+  
+      if (result.rowCount > 0) {
+        res.status(200).json({ message: 'Product deleted successfully' });
+      } else {
+        res.status(404).json({ error: 'Product not found' });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Database error' });
+    }
+  });
+  
+
+
+
 // sign up
 
 app.post('/signup', async(req, res) => {
@@ -151,10 +238,10 @@ app.post('/login', async(req, res) => {
         if(!users.rows.length) return res.json({ detail: "User does not exist!" });
 
         const success = await bcrypt.compare(password, users.rows[0].password);
-        const token = jwt.sign({ email, user_id: users.rows[0].id }, 'secret', { expiresIn: '1hr' });
         
         if(success) {
-            res.json({ 'email' : users.rows[0].email, token, user_id: users.rows[0].id });
+            const token = jwt.sign({ email, user_id: users.rows[0].id, role: users.rows[0].role }, 'secret', { expiresIn: '1hr' });
+            res.json({ 'email' : users.rows[0].email, token, user_id: users.rows[0].id, role: users.rows[0].role });
         
         } else {
             res.json({ detail:  "Login failed" });

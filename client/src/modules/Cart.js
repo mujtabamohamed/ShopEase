@@ -66,7 +66,6 @@ function Cart() {
           }
         }
         
-
     // Calculate the total price
     const getTotalPrice = () => {
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
@@ -74,6 +73,7 @@ function Cart() {
 
     return (
         <div className="bg-[#fff] text-gray-100 min-h-screen ">
+        
             {/* Cart Section */}
             <section className="py-20 text-center bg-[#fff]">
                 <div className="flex flex-col container mx-auto text-center">
