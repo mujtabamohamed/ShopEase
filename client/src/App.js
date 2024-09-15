@@ -5,25 +5,38 @@ import Auth from "./components/Auth";
 import Navbar from "./components/Navbar";
 import Home from "./modules/Home";
 import Cart from "./modules/Cart"; // Import the Cart component
+import Dashboard from "./modules/Dashboard";
 
 function App() {
   const [cookies, setCookie, removeCookie] = useCookies(null);
   const authToken = cookies.AuthToken;
+  const userRole = cookies.Role;
 
   return (
-    <div className="w-full h-screen bg-[#191919]">
-      {!authToken && <Auth />}
-      {authToken && (
-        <>
-          <Router>
-            <Navbar />
+    <div className="w-full h-screen bg-[#fff]">
+      <Router>
+        {!authToken ? (
+          <Auth />
+        ) : (
+          <>
+            {userRole === "buyer" && <Navbar />}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/cart/:user_id" element={<Cart />} />
+              {userRole === "seller" && (
+                <>
+                  <Route path="/dashboard/:user_id" element={<Dashboard />} />
+                </>
+              )}
+              {userRole === "buyer" && (
+                <>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/cart/:user_id" element={<Cart />} />
+                </>
+              )}
             </Routes>
-          </Router>
-        </>
-      )}
+          </>
+        )}
+      </Router>
+      
     </div>
   );
 }

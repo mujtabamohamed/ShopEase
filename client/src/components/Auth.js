@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCookies } from 'react-cookie';
+import { useNavigate } from "react-router-dom";
 // import { FaGithub } from 'react-icons/fa';
 
 // import Loader from "./Loader/Loader";
@@ -18,6 +19,8 @@ function Auth() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   console.log(cookies);
 
   function viewLogin(status) {
@@ -34,11 +37,11 @@ function Auth() {
       setIsLoading(false);
       return
     }
-
+    
     const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/${endpoint}`, {
       method: 'POST',
       headers: {"Content-Type": 'application/json'},
-      body: JSON.stringify({email, password, role})
+      body: JSON.stringify({ email, password, role })
     });
 
     const data = await response.json();
@@ -50,8 +53,18 @@ function Auth() {
     } else {
       setCookie('Email', data.email);
       setCookie('AuthToken', data.token);
-      setCookie('Role', role);
+      setCookie('Role', data.role);
       setCookie('user_id', data.user_id);
+      setRole(data.role);
+
+      console.log(data.role);
+
+
+      if (data.role === "seller") {
+        navigate(`/dashboard/${data.user_id}`);  // Navigate to seller dashboard
+      } else {
+        navigate('/');  // Navigate to buyer home
+      }
 
       window.location.reload();
     }
@@ -68,13 +81,13 @@ function Auth() {
             alt="Logo"
             className="xs:w-12 xs:h-12 sm:w-12 sm:h-12 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-30 xl:h-30 2xl:w-30 2xl:h-30"/> */}
 
-          <div className="text-[#53742c] font-semibold xs:text-4xl lg:text-5xl ml-2">
-          ShopEase
+          <div className="text-[#53742c] font-bold xs:text-4xl lg:text-5xl ml-2">
+          SHOPEASE
           </div>
         </div>
 
         <form className="flex flex-col items-center w-full xl:w-auto 2xl:w-auto">
-          <div className="text-xl mb-4 font-medium text-[#3a3a3a] xs:text-2xl xs:mb-5 sm:mb-5 sm:text-2xl lg:text-3xl lg:mb-5 xl:mb-5 ">
+          <div className="text-lg mb-4 font-medium text-[#3a3a3a] xs:text-2xl xs:mb-5 sm:mb-5 sm:text-2xl lg:text-3xl lg:mb-5 xl:mb-5 ">
             {isLogIn ? 'Please log in' : 'Please sign up'}</div>
 
           <input 
