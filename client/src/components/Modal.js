@@ -3,11 +3,11 @@ import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 
 function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
+  
   const [cookies, setCookie, removeCookie] = useCookies(null);
   const { user_id } = useParams();
 
   const editMode = mode === 'edit' ? true : false;
-  console.log(sellerProduct)
 
   const [data, setData] = useState({
     user_id: cookies.user_id, 
@@ -18,7 +18,9 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
     price: editMode? sellerProduct.price : "",
     imageurl: editMode? sellerProduct.imageurl : "",
   });
+  
 
+// Add a new seller product   
   async function postData(e) {
     e.preventDefault();
 
@@ -52,12 +54,14 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
     }
   }
 
+
+// Edit seller product  
   async function editData(e) {
     e.preventDefault();
   
     const productData = {
       user_id: user_id,
-      product_id: data.product_id,  // Use data.product_id here
+      product_id: data.product_id, 
       product_name: data.product_name,
       description: data.description,
       category: data.category,
@@ -76,6 +80,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
         console.log("Product edited successfully");
         setShowModal(false);
         fetchProducts(); 
+
       } else {
         console.log('Failed to edit product');
       }
@@ -95,10 +100,11 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
               xs:left-60 xs:bottom-4 sm:left-96 sm:bottom-0 md:left-112 md:bottom-2" 
               onClick={() => setShowModal(false)}>X
           </button>
+
           <div className="flex justify-between items-center">
             <h3 className="text-[#3a3a3a] text-xl font-semibold mb-2">Let's {mode} your product</h3>
-            
           </div>
+          
           <form className="flex flex-col">
 
             <label
@@ -177,5 +183,5 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
     );
   }
   
-  export default Modal;
+export default Modal;
   

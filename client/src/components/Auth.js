@@ -9,19 +9,17 @@ function Auth() {
   const[cookies,setCookie, removeCookie] = useCookies(null);
 
   const [isLogIn, setIsLogin] = useState(true);
-
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
   const [role, setRole] = useState(null);
 
   const [error, setError] = useState(null);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  console.log(cookies);
+  // console.log(cookies);
 
   function viewLogin(status) {
     setError(null);
@@ -45,27 +43,26 @@ function Auth() {
     });
 
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     if(data.detail) {
       setError(data.detail);
       setIsLoading(false);
+
     } else {
       setCookie('Email', data.email);
       setCookie('AuthToken', data.token);
       setCookie('Role', data.role);
       setCookie('user_id', data.user_id);
       setRole(data.role);
-
-      console.log(data.role);
-
+      // console.log(data.role);
 
       if (data.role === "seller") {
-        navigate(`/dashboard/${data.user_id}`);  // Navigate to seller dashboard
-      } else {
-        navigate('/');  // Navigate to buyer home
-      }
+        navigate(`/dashboard/${data.user_id}`);
 
+      } else {
+        navigate('/'); 
+      }
       window.location.reload();
     }
   }
@@ -128,7 +125,6 @@ function Auth() {
             onClick={(e) => handleSubmit(e, isLogIn ? 'login' : 'signup')} /> 
 
           {/* {isLoading && <Loader className="mt-4" />} */}
-
             
           <div className="text-[#838383] font-normal text-sm mt-3 sm:text-sm sm:mt-3 lg:text-[16px] lg:mt-4 ">
             <p>
@@ -142,7 +138,6 @@ function Auth() {
 
         </form>
       </div>
-
     </div>
   );
 }

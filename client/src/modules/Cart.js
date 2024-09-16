@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { X } from 'lucide-react';
 
 function Cart() {
     const { user_id } = useParams();
     const [cartItems, setCartItems] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState('');
 
+
     useEffect(() => {
-        console.log("User ID from URL:", user_id);
+        // console.log("User ID from URL:", user_id);
         if (!user_id) {
             setError('Invalid userId');
             setLoading(false);
             return;
         }
 
-        const fetchCartItems = async () => {
+        async function fetchCartItems() {
+            
             try {
                 const response = await fetch(`http://localhost:8000/cart/${user_id}`);
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch cart items');
                 }
@@ -31,8 +36,10 @@ function Cart() {
                     quantity: item.quantity || 1,
                 }));
                 setCartItems(itemsWithQuantity);
+
             } catch (err) {
                 setError(err.message);
+                
             } finally {
                 setLoading(false);
             }
@@ -45,9 +52,9 @@ function Cart() {
     if (error) return <div>Error: {error}</div>;
 
 
-    // Function to handle removing item from cart
-    const handleRemoveItem = async (productId) => {
-        console.log("Removing product ID:", productId);
+// Remove product from buyer's cart
+    async function handleRemoveItem(productId) {
+        // console.log("Removing product ID:", productId);
 
         try {
             const response = await fetch(`http://localhost:8000/cart/${user_id}/${productId}`,{
@@ -69,11 +76,13 @@ function Cart() {
             setMessage('Error removing item from cart');
           }
         }
+
         
-    // Calculate the total price
+// Calculate the total price
     const getTotalPrice = () => {
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
     };
+
 
     return (
         <div className="bg-[#fff] text-gray-100 min-h-screen ">
@@ -84,6 +93,7 @@ function Cart() {
                 
                     <div className="flex flex-col gap-4 justify-center mx-auto">
                         <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-16">SHOPPING BAG</h1>
+
                         {message && <div className="text-center font-semibold text-[#426e1d] mb-16">{message}</div>}
 
                         {cartItems.map((item) => (
@@ -101,7 +111,8 @@ function Cart() {
                                 </div>
                             </div>
 
-                            {/* Delete Icon */}
+
+                            {/* Remove */}
                             <div className="ml-36 flex-shrink-0 flex items-center">
                                 <X 
                                     className=" stroke-[#3a3a3a] hover:stroke-[#000] cursor-pointer"
@@ -113,7 +124,7 @@ function Cart() {
                         ))}
                     </div>
 
-                {/* Cart Summary */}
+                {/* Cart Total */}
                     <div className="mt-8 p-4 justify-center">
                         <h3 className="text-xl font-semibold text-[#3a3a3a]">
                         Total Price: ₹{getTotalPrice()}
@@ -125,7 +136,6 @@ function Cart() {
                 </div>
             </section>
         </div>
-
     );
 }
 

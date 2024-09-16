@@ -6,6 +6,7 @@ import { House } from 'lucide-react';
 import { UserRound } from 'lucide-react';
 import { ShoppingBag } from 'lucide-react';
 
+
 function Navbar() {
     const [cookies, setCookie, removeCookie] = useCookies(['user_id']);
     const [userId, setUserId] = useState(null);
@@ -18,7 +19,8 @@ function Navbar() {
         }
     }, [cookies.user_id]);
 
-    // Toggle the account dropdown visibility
+
+// Toggle the account dropdown visibility
     const toggleAccountDropdown = () => {
         setIsAccountDropdownOpen(!isAccountDropdownOpen);
     };
@@ -31,7 +33,8 @@ function Navbar() {
         removeCookie('Email');
         window.location.reload();
       }
-    
+
+
     return (
         <nav className="p-4 bg-[#fff] relative">
             <div className="container mx-auto flex justify-between items-center">
@@ -50,10 +53,12 @@ function Navbar() {
                     </li>
 
                     <li className="relative">
+
                         {/* Account button */}
                         <button onClick={toggleAccountDropdown} className="flex flex-row hover:text-[#000] cursor-pointer focus:outline-none">
                             <UserRound
-                                size={22}
+                                width={22}
+                                height={22}
                                 className="stroke-[#3a3a3a] hover:stroke-[#000] lucide lucide-user mr-1" />Account
                         </button>
 

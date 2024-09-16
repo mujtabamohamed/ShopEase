@@ -3,6 +3,7 @@ import { useCookies } from "react-cookie";
 
 import { UserRound } from 'lucide-react';
 
+
 function SellerNavbar() {
 
     const [cookies, setCookie, removeCookie] = useCookies(['user_id']);
@@ -16,8 +17,9 @@ function SellerNavbar() {
         }
     }, [cookies.user_id]);
     
-    // Toggle the account dropdown visibility
-    const toggleAccountDropdown = () => {
+
+// Toggle the account dropdown visibility
+    function toggleAccountDropdown() {
         setIsAccountDropdownOpen(!isAccountDropdownOpen);
     };
     
@@ -30,6 +32,7 @@ function SellerNavbar() {
         window.location.reload();
     }
 
+
   return (
     <nav className="p-4 bg-[#fff] relative">
         <div className="container mx-auto flex justify-between items-center">
@@ -41,11 +44,16 @@ function SellerNavbar() {
             <ul className="flex space-x-4 font-inter font-medium text-[#3a3a3a] ml-auto mr-16">
 
                 <li className="relative">
+
                     {/* Account button */}
-                    <button onClick={toggleAccountDropdown} className="flex flex-row hover:text-[#000] cursor-pointer focus:outline-none">
-                    <UserRound
-                        size={22}
-                        className="stroke-[#3a3a3a] hover:stroke-[#000] lucide lucide-user mr-1" />Account
+                    <button 
+                        className="flex flex-row hover:text-[#000] cursor-pointer focus:outline-none"
+                        onClick={toggleAccountDropdown}>
+
+                        <UserRound
+                            className="stroke-[#3a3a3a] hover:stroke-[#000] lucide lucide-user mr-1"
+                            width={22}
+                            height={22}/>Account
                     </button>
 
                     {/* Dropdown menu for account */}
@@ -53,9 +61,8 @@ function SellerNavbar() {
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
                             
                             <button 
-                                onClick={signOut} 
-                                className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                Logout
+                                className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                                onClick={signOut}>Logout
                             </button>
                         </div>
                     )}
@@ -63,7 +70,7 @@ function SellerNavbar() {
             </ul>
         </div>
     </nav>
-  )
+  );
 }
 
-export default SellerNavbar
+export default SellerNavbar;

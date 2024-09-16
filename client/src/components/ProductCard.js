@@ -3,10 +3,10 @@ import React from 'react';
 function ProductCard({ productId, productName, price, description, imageUrl, handleAddToCart }) {
   return (
     <div className="w-116 bg-[#00000] p-4 rounded-lg text-left">
+    
       <img
         src={imageUrl}
         id={productId}
-
         alt={productName}
         className="w-full h-54 object-cover rounded-xl" />
 
@@ -20,7 +20,6 @@ function ProductCard({ productId, productName, price, description, imageUrl, han
           {price}
         </p>
       </div>
-      
       
       <p className="text-sm text-[#707070] text-left">{description}</p>
 
