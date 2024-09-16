@@ -25,11 +25,15 @@ function SellerNavbar() {
     
     function signOut() {
         console.log("Sign Out");
-        removeCookie('Email',);
-        removeCookie('user_id',);
-        removeCookie('AuthToken');
-        removeCookie('Role');
-        window.location.reload();
+        removeCookie('Email', { path: '/' });
+        removeCookie('user_id', { path: '/' });
+        removeCookie('AuthToken', { path: '/' });
+        removeCookie('Role', { path: '/' });
+
+        setTimeout(() => {
+            window.location.reload();
+            window.location.href = '/';
+        }, 100);
     }
 
 

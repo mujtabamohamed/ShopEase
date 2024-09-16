@@ -40,7 +40,7 @@ function Dashboard() {
                 throw new Error('Failed to fetch seller products');
             }
             const data = await response.json();
-            console.log("Seller products data:", data.items);
+            // console.log("Seller products data:", data.items);
 
             const productsWithQuantity = data.items.map(item => ({
                 ...item,

@@ -11,6 +11,7 @@ const PORT = process.env.PORT ?? 8000;
 app.use(cors());
 app.use(express.json());
 
+
 function extractErrorMessage(error) {
     if (error && error.detail) {
       const match = error.detail.match(/\(([^)]+)\) already exists/);
@@ -22,6 +23,7 @@ function extractErrorMessage(error) {
   }
 
 
+// Retrieve all products
 app.get('/products', async (req, res) => {
 
     try {
@@ -38,10 +40,11 @@ app.get('/products', async (req, res) => {
 });
 
 
+// Retrieve cart items of a specific buyer
 app.get('/cart/:user_id', async (req, res) => {
     const userId = parseInt(req.params.user_id, 10);
 
-    console.log('Received user_id:', userId);
+    // console.log('Received user_id:', userId);
 
     if (isNaN(userId)) {
         return res.status(400).json({ error: 'Invalid user_id' });
@@ -71,10 +74,10 @@ app.get('/cart/:user_id', async (req, res) => {
 });
 
 
-// Example route for adding an item to the cart
+// Add product to buyer's cart
 app.post('/cart/add', async (req, res) => {
     const { user_id, product_id, quantity } = req.body;
-    console.log('Request Body:', req.body);
+    // console.log('Request Body:', req.body);
   
     try {
       const result = await pool.query(
@@ -89,7 +92,7 @@ app.post('/cart/add', async (req, res) => {
   });
   
 
-// Remove product from cart endpoint
+// Remove product from buyer's cart
 app.delete('/cart/:user_id/:product_id', async (req, res) => {
     const { user_id, product_id } = req.params;
 
@@ -115,10 +118,11 @@ app.delete('/cart/:user_id/:product_id', async (req, res) => {
 });
 
 
+// Retrieve products for a specific seller
 app.get('/dashboard/:user_id', async (req, res) => {
     const userId = parseInt(req.params.user_id, 10);
 
-    console.log('Received user_id:', userId);
+    // console.log('Received user_id:', userId);
 
     if (isNaN(userId)) {
         return res.status(400).json({ error: 'Invalid user_id' });
@@ -134,7 +138,7 @@ app.get('/dashboard/:user_id', async (req, res) => {
         `;
 
         const sellerItems = await client.query(query, [userId]);
-        client.release(); // Release the client back to the pool
+        client.release();
 
         res.json({
             success: true,
@@ -148,10 +152,11 @@ app.get('/dashboard/:user_id', async (req, res) => {
 });
 
 
+// Add a new seller product  
 app.post('/dashboard/add/:user_id', async(req, res) => {
     const userId = parseInt(req.params.user_id, 10);
     const { product_name, category, description, price, imageurl } = req.body;
-    console.log('Received user_id:', userId);
+    // console.log('Received user_id:', userId);
 
     if (isNaN(userId)) {
         return res.status(400).json({ error: 'Invalid user_id' });
@@ -176,6 +181,7 @@ app.post('/dashboard/add/:user_id', async(req, res) => {
 });
 
 
+// Delete seller product  
 app.delete('/dashboard/delete/:user_id/:product_id', async (req, res) => {
     const { user_id, product_id } = req.params;
   
@@ -201,10 +207,11 @@ app.delete('/dashboard/delete/:user_id/:product_id', async (req, res) => {
   });
 
 
+// Edit seller product  
   app.put('/dashboard/edit/:user_id/:product_id', async(req, res) => {
     const { user_id, product_id } = req.params;
     const { product_name, category, description, price, imageurl } = req.body;
-    console.log('Received user_id:', user_id);
+    // console.log('Received user_id:', user_id);
 
     if (isNaN(user_id) || isNaN(product_id)) {
         return res.status(400).json({ error: 'Invalid user_id or product_id' });
@@ -227,11 +234,9 @@ app.delete('/dashboard/delete/:user_id/:product_id', async (req, res) => {
         return res.status(500).json({ error: 'Failed to edit product' });
     }
 });
+ 
 
-  
-
-// sign up
-
+// Sign up
 app.post('/signup', async(req, res) => {
     const { email, password, role } = req.body;
     const salt = bcrypt.genSaltSync(10);
@@ -256,8 +261,7 @@ app.post('/signup', async(req, res) => {
 });
 
 
-// login
-
+// Login
 app.post('/login', async(req, res) => {
     const { email, password } = req.body;
 
