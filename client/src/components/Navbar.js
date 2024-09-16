@@ -28,6 +28,7 @@ function Navbar() {
         removeCookie('user_id',);
         removeCookie('AuthToken');
         removeCookie('Role');
+        removeCookie('Email');
         window.location.reload();
       }
     

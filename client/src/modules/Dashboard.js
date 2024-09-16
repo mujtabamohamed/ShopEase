@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
+
 import { Trash2 } from 'lucide-react';
 
 import Modal from '../components/Modal';
-
+import SellerNavbar from '../components/SellerNavbar';
 
 function Dashboard() {
     const { user_id } = useParams();
     const [sellerProducts, setSellerProducts] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [message, setMessage] = useState('');
 
     const [modalMode, setModalMode] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const [cookies, setCookie, removeCookie] = useCookies(['user_id']);
-    const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false); 
 
     const [showModal, setShowModal] = useState(false);
 
@@ -30,59 +31,38 @@ function Dashboard() {
     }, [cookies, navigate]);
 
 
+    const fetchSellerProducts = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/dashboard/${user_id}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch seller products');
+            }
+            const data = await response.json();
+            console.log("Seller products data:", data.items);
+
+
+            const productsWithQuantity = data.items.map(item => ({
+                ...item,
+                product_id: item.id
+            }));
+            setSellerProducts(productsWithQuantity);
+            console.log("Seller : ",sellerProducts)
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        console.log("User ID from URL:", user_id);
         if (!user_id) {
             setError('Invalid userId');
             setLoading(false);
             return;
         }
-
-        const fetchSellerProducts = async () => {
-            try {
-                const response = await fetch(`http://localhost:8000/dashboard/${user_id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch seller products');
-                }
-                const data = await response.json();
-                console.log("Seller products data:", data.items);
-
-
-                const productsWithQuantity = data.items.map(item => ({
-                    ...item,
-                    product_id: item.id
-                }));
-                setSellerProducts(productsWithQuantity);
-                console.log("Seller : ",sellerProducts)
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchSellerProducts();
     }, [user_id]);
-
-    const toggleAccountDropdown = () => {
-        setIsAccountDropdownOpen(!isAccountDropdownOpen);
-    };
     
-    const signOut = () => {
-        console.log("Signing out...");
-    
-        console.log("Before removing cookies:", cookies);
-    
-        removeCookie('user_id', { path: '/' });
-        removeCookie('AuthToken', { path: '/' });
-        removeCookie('Role', { path: '/' });
-        removeCookie('Email', { path: '/' });
-    
-        console.log("After removing cookies:", cookies);
-    
-        window.location.href = "/";    
-    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -92,16 +72,18 @@ function Dashboard() {
         console.log("Removing product ID:", productId);
 
         try {
-            const response = await fetch(`http://localhost:8000/dashboard/${user_id}/delete/${productId}`,{
+            const response = await fetch(`http://localhost:8000/dashboard/delete/${user_id}/${productId}`,{
               method: "DELETE",
               headers: { 'Content-Type': 'application/json' },
           });
     
           if (response.ok) {
-            console.log("Product added successfully");
-            // getData();
+            console.log("Product deleted successfully");
+            setMessage('Product was deleted successfully');
+            fetchSellerProducts();
           } else {
-                console.log('Failed to add product');
+                console.log('Failed to delete product');
+                setMessage('Failed to delete product');
           }
           
         } catch (err) {
@@ -116,54 +98,10 @@ function Dashboard() {
                 <Modal 
                     mode={modalMode} 
                     setShowModal={setShowModal} 
-                    sellerProduct={selectedProduct} />
+                    sellerProduct={selectedProduct} 
+                    fetchProducts={fetchSellerProducts} 
+                    />
                 )}
-
-            <nav className="p-4 bg-[#fff] relative">
-                <div className="container mx-auto flex justify-between items-center">
-                
-                    <div className="ml-16">
-                        <h1 className="text-[24px] font-work_sans font-bold text-[#53742c]">SHOPEASE</h1>
-                    </div>
-
-                    <ul className="flex space-x-4 font-inter font-medium text-[#3a3a3a] ml-auto mr-16">
-    
-                        <li className="relative">
-                            {/* Account button */}
-                            <button onClick={toggleAccountDropdown} className="flex flex-row hover:text-[#000] cursor-pointer focus:outline-none">
-                                <svg 
-                                    xmlns="http://www.w3.org/2000/svg" 
-                                    width="22" 
-                                    height="22" 
-                                    viewBox="0 0 24 24" 
-                                    fill="none" 
-                                    stroke="#3a3a3a" 
-                                    strokeWidth="2" 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round"
-                                    className="hover:stroke-[#000] lucide lucide-user mr-1">
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>Account
-                            </button>
-
-                            {/* Dropdown menu for account */}
-                            {isAccountDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
-                                    
-                                    <button 
-                                        onClick={signOut} 
-                                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            {/* {showModal && <Modal mode={modalMode} setShowModal={setShowModal} sellerProducts={sellerProducts}/>} */}
 
             {/* Product Section */}
             <section className="py-20 text-center bg-[#fff]">
@@ -178,6 +116,8 @@ function Dashboard() {
                                 setShowModal(true)}}>
                             Add new products
                     </button>
+
+                    {message && <div className="text-center font-semibold text-[#426e1d] mb-10">{message}</div>}
 
                     {sellerProducts.map((item) => (
                     <div key={item.product_id} className="flex items-start pb-6 border-b justify-between">

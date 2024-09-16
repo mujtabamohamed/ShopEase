@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 
-function Modal({ mode, setShowModal, sellerProduct }) {
+function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
   const [cookies, setCookie, removeCookie] = useCookies(null);
   const { user_id } = useParams();
 
@@ -10,7 +10,8 @@ function Modal({ mode, setShowModal, sellerProduct }) {
   console.log(sellerProduct)
 
   const [data, setData] = useState({
-    user_id: cookies.user_id,    
+    user_id: cookies.user_id, 
+    product_id: sellerProduct?.product_id ?? "",   
     product_name: editMode? sellerProduct.product_name : "",
     description: editMode? sellerProduct.description : "",
     category: editMode? sellerProduct.category : "",
@@ -21,8 +22,9 @@ function Modal({ mode, setShowModal, sellerProduct }) {
   async function postData(e) {
     e.preventDefault();
 
-    const productData = {
-        user_id: user_id,  
+    const addProductData = {
+        user_id: user_id,
+        product_id: data.product_id,  
         product_name: data.product_name,
         description: data.description,
         category: data.category,
@@ -31,16 +33,16 @@ function Modal({ mode, setShowModal, sellerProduct }) {
       };
 
     try {
-      const response = await fetch(`http://localhost:8000/dashboard/${user_id}/add`, {
+      const response = await fetch(`http://localhost:8000/dashboard/add/${user_id}`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify(productData),
+        body: JSON.stringify(addProductData),
       });
 
       if (response.ok) {
         console.log("Product added successfully");
         setShowModal(false);
-        // getData();
+        fetchProducts(); 
       } else {
             console.log('Failed to add product');
       }
@@ -49,6 +51,40 @@ function Modal({ mode, setShowModal, sellerProduct }) {
         console.error(err);
     }
   }
+
+  async function editData(e) {
+    e.preventDefault();
+  
+    const productData = {
+      user_id: user_id,
+      product_id: data.product_id,  // Use data.product_id here
+      product_name: data.product_name,
+      description: data.description,
+      category: data.category,
+      price: data.price,
+      imageurl: data.imageurl
+    };
+  
+    try {
+      const response = await fetch(`http://localhost:8000/dashboard/edit/${user_id}/${data.product_id}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify(productData),
+      });
+  
+      if (response.ok) {
+        console.log("Product edited successfully");
+        setShowModal(false);
+        fetchProducts(); 
+      } else {
+        console.log('Failed to edit product');
+      }
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
 
     return (
       <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm">
@@ -129,13 +165,11 @@ function Modal({ mode, setShowModal, sellerProduct }) {
               name="imageurl"
               value={data.imageurl}
               onChange={(e) => setData({ ...data, imageurl: e.target.value })} />
-
-            <br/>
             
             <input 
-              className="bg-[#53742c] hover:bg-[#466325] text-white text-md font-semibold rounded-full w-full mt-5 mb-4 py-2 
+              className="bg-[#53742c] hover:bg-[#466325] text-white text-md font-semibold rounded-full w-full mt-10 mb-4 py-2 
               cursor-pointer transition duration-300 hover:opacity-85 border-none" 
-              value={mode} type="submit" onClick={postData} />
+              value={mode} type="submit" onClick={editMode ? editData : postData} />
           </form>
         </div>
       </div>

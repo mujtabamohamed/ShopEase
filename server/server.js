@@ -37,6 +37,7 @@ app.get('/products', async (req, res) => {
     }
 });
 
+
 app.get('/cart/:user_id', async (req, res) => {
     const userId = parseInt(req.params.user_id, 10);
 
@@ -146,7 +147,8 @@ app.get('/dashboard/:user_id', async (req, res) => {
     }
 });
 
-app.post('/dashboard/:user_id/add', async(req, res) => {
+
+app.post('/dashboard/add/:user_id', async(req, res) => {
     const userId = parseInt(req.params.user_id, 10);
     const { product_name, category, description, price, imageurl } = req.body;
     console.log('Received user_id:', userId);
@@ -171,10 +173,10 @@ app.post('/dashboard/:user_id/add', async(req, res) => {
         console.error('Database insert error:', err);
         return res.status(500).json({ error: 'Failed to add product' });
     }
-})
+});
 
 
-app.delete('/dashboard/:user_id/delete/:product_id', async (req, res) => {
+app.delete('/dashboard/delete/:user_id/:product_id', async (req, res) => {
     const { user_id, product_id } = req.params;
   
     if (isNaN(user_id) || isNaN(product_id)) {
@@ -197,9 +199,36 @@ app.delete('/dashboard/:user_id/delete/:product_id', async (req, res) => {
       res.status(500).json({ error: 'Database error' });
     }
   });
+
+
+  app.put('/dashboard/edit/:user_id/:product_id', async(req, res) => {
+    const { user_id, product_id } = req.params;
+    const { product_name, category, description, price, imageurl } = req.body;
+    console.log('Received user_id:', user_id);
+
+    if (isNaN(user_id) || isNaN(product_id)) {
+        return res.status(400).json({ error: 'Invalid user_id or product_id' });
+    }
+
+    if (!product_name || !category || !description || !price || !imageurl) {
+        return res.status(400).json({ error: 'All fields are required.' });
+    } 
+
+    try {
+        const editProduct = 
+        await pool.query(
+            'UPDATE products SET product_name=$1, category=$2, description=$3, price=$4, imageurl=$5 WHERE id=$6 RETURNING *;',
+            [product_name, category, description, price, imageurl, product_id]); // Notice: Using product_id here
+
+        res.status(200).json(editProduct.rows[0]); // Corrected to send a single response
+
+    } catch (err) {
+        console.error('Database edit error:', err); 
+        return res.status(500).json({ error: 'Failed to edit product' });
+    }
+});
+
   
-
-
 
 // sign up
 

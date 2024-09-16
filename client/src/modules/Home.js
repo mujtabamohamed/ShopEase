@@ -37,7 +37,7 @@ function Home() {
         const response = await axios.post(`http://localhost:8000/cart/add`, {
           user_id: cookies.user_id,
           product_id: productId,
-          quantity: 1  // Default quantity is 1
+          quantity: 1,
         });
   
         if (response.status === 200) {
@@ -59,6 +59,7 @@ function Home() {
   return (
     <div className="bg-[#fff] text-gray-100 min-h-screen">
 
+      {message && <div className="text-right mr-10 font-semibold text-[#426e1d]">{message}</div>}
 
       {/* Hero Section */}
       <section className="py-20 text-center bg-[#fff]">
@@ -121,8 +122,6 @@ function Home() {
           </div>
           
           {/* Success/Error Message */}
-          {message && <div className="text-center text-[#426e1d]">{message}
-          </div>}
         </div>
       </section>
     </div>

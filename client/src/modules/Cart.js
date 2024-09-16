@@ -7,6 +7,7 @@ function Cart() {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         console.log("User ID from URL:", user_id);
@@ -56,13 +57,16 @@ function Cart() {
             if(response.status === 200) {
                 const updatedCart = cartItems.filter(item => item.product_id !== productId);
                 setCartItems(updatedCart);
+                setMessage('Product removed from your cart!');
 
             } else {
                 console.error('Error removing item from cart');
+                setMessage('Error removing item from cart');
             }
       
           } catch (err) {
             console.error('Error removing item from cart:', error);
+            setMessage('Error removing item from cart');
           }
         }
         
@@ -79,7 +83,8 @@ function Cart() {
                 <div className="flex flex-col container mx-auto text-center">
                 
                     <div className="flex flex-col gap-4 justify-center mx-auto">
-                        <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-24">SHOPPING BAG</h1>
+                        <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-16">SHOPPING BAG</h1>
+                        {message && <div className="text-center font-semibold text-[#426e1d] mb-16">{message}</div>}
 
                         {cartItems.map((item) => (
                         <div key={item.product_id} className="flex items-start pb-6 border-b justify-between">

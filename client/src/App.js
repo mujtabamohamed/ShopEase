@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Auth from "./components/Auth";
 import Navbar from "./components/Navbar";
 import Home from "./modules/Home";
-import Cart from "./modules/Cart"; // Import the Cart component
+import Cart from "./modules/Cart";
 import Dashboard from "./modules/Dashboard";
+import SellerNavbar from "./components/SellerNavbar";
 
 function App() {
   const [cookies, setCookie, removeCookie] = useCookies(null);
@@ -20,6 +21,7 @@ function App() {
         ) : (
           <>
             {userRole === "buyer" && <Navbar />}
+            {userRole === "seller" && <SellerNavbar />}
             <Routes>
               {userRole === "seller" && (
                 <>
