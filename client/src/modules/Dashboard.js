@@ -35,7 +35,7 @@ function Dashboard() {
     async function fetchSellerProducts() {
 
         try {
-            const response = await fetch(`http://localhost:8000/dashboard/${user_id}`);
+            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/${user_id}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch seller products');
             }
@@ -77,7 +77,7 @@ function Dashboard() {
         // console.log("Removing product ID:", productId);
 
         try {
-            const response = await fetch(`http://localhost:8000/dashboard/delete/${user_id}/${productId}`,{
+            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/delete/${user_id}/${productId}`,{
               method: "DELETE",
               headers: { 'Content-Type': 'application/json' },
           });

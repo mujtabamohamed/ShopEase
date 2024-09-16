@@ -35,7 +35,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
       };
 
     try {
-      const response = await fetch(`http://localhost:8000/dashboard/add/${user_id}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/add/${user_id}`, {
         method: "POST",
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify(addProductData),
@@ -70,7 +70,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
     };
   
     try {
-      const response = await fetch(`http://localhost:8000/dashboard/edit/${user_id}/${data.product_id}`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/edit/${user_id}/${data.product_id}`, {
         method: "PUT",
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify(productData),

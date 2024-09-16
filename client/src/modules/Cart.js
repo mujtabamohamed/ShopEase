@@ -23,7 +23,7 @@ function Cart() {
         async function fetchCartItems() {
             
             try {
-                const response = await fetch(`http://localhost:8000/cart/${user_id}`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/cart/${user_id}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch cart items');
@@ -57,7 +57,7 @@ function Cart() {
         // console.log("Removing product ID:", productId);
 
         try {
-            const response = await fetch(`http://localhost:8000/cart/${user_id}/${productId}`,{
+            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/cart/${user_id}/${productId}`,{
               method: "DELETE"
           });
             

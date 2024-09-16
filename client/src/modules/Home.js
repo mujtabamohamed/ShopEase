@@ -21,7 +21,7 @@ function Home() {
 // Retrieve all products
     async function fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:8000/products');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/products`);
         setProducts(response.data);
 
       } catch (error) {
@@ -41,7 +41,7 @@ function Home() {
       }
   
       try {
-        const response = await axios.post(`http://localhost:8000/cart/add`, {
+        const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/cart/add`, {
           user_id: cookies.user_id,
           product_id: productId,
           quantity: 1,

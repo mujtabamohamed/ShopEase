@@ -246,7 +246,7 @@ app.post('/signup', async(req, res) => {
             [email, hashedPassword, role]);
         
         const user_id = signup.rows[0].id; 
-        const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1hr' });
         res.json({ email, token, user_id });
 
     } catch (err) {
@@ -273,7 +273,7 @@ app.post('/login', async(req, res) => {
         const success = await bcrypt.compare(password, users.rows[0].password);
         
         if(success) {
-            const token = jwt.sign({ email, user_id: users.rows[0].id, role: users.rows[0].role }, 'secret', { expiresIn: '1hr' });
+            const token = jwt.sign({ email, user_id: users.rows[0].id, role: users.rows[0].role },  process.env.JWT_SECRET, { expiresIn: '1hr' });
             res.json({ 'email' : users.rows[0].email, token, user_id: users.rows[0].id, role: users.rows[0].role });
         
         } else {
