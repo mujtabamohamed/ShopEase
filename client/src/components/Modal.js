@@ -145,7 +145,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
               <option value="">Select</option>
               <option value="Clothing">Clothing</option>
               <option value="Shoes">Shoes</option>
-              <option value="Accessories">Electronics</option>
+              <option value="Electronics">Electronics</option>
             </select>
 
             <label
