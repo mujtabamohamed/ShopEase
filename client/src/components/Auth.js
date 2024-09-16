@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCookies } from 'react-cookie';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 // import { FaGithub } from 'react-icons/fa';
 
 // import Loader from "./Loader/Loader";
@@ -71,20 +71,24 @@ function Auth() {
     <div className="bg-[#fff] h-screen flex flex-col items-center justify-center px-8">
       <div className="flex flex-col items-center justify-center mb-24">
 
-        <div className="flex flex-row items-ceter justify-center xs:mb-8 lg:mb-12">  
+        <div className="flex flex-row items-ceter justify-center xs:mb-8 lg:mb-12"> 
+          
+          <img 
+            className="mr-3" 
+            src="/ShopEase.png" 
+            alt="ShopEase Logo" 
+            width={50} />
+            
+          <h1 className="text-5xl font-work_sans font-bold text-[#6e993b]">ShopEase</h1> 
 
           {/* <img 
             src={`${process.env.PUBLIC_URL}/images/check.png`} 
             alt="Logo"
             className="xs:w-12 xs:h-12 sm:w-12 sm:h-12 md:w-12 md:h-12 lg:w-14 lg:h-14 xl:w-30 xl:h-30 2xl:w-30 2xl:h-30"/> */}
-
-          <div className="text-[#53742c] font-bold xs:text-4xl lg:text-5xl ml-2">
-          SHOPEASE
-          </div>
         </div>
 
         <form className="flex flex-col items-center w-full xl:w-auto 2xl:w-auto">
-          <div className="text-lg mb-4 font-medium text-[#3a3a3a] xs:text-2xl xs:mb-5 sm:mb-5 sm:text-2xl lg:text-3xl lg:mb-5 xl:mb-5 ">
+          <div className="text-lg mb-4 font-medium text-[#3a3a3a] xs:text-2xl xs:mb-5 sm:mb-5 sm:text-2xl lg:text-2xl lg:mb-5 xl:mb-5 ">
             {isLogIn ? 'Please log in' : 'Please sign up'}</div>
 
           <input 
@@ -121,7 +125,7 @@ function Auth() {
           <input 
             type="submit" 
             value={isLogIn ? "Login" : 'Sign up'} 
-            className="text-[#fff] font-medium text-center bg-[#53742c] rounded-lg py-2 w-[250px] hover:bg-[#435f24] xs:w-[280px] sm:w-[320px] md:w-[380px] lg:w-[400px] xl:w-[420px] 2xl:w-[420px]"
+            className="text-[#fff] font-medium text-center bg-[#6e993b] rounded-lg py-2 w-[250px] hover:bg-[#5e8332] xs:w-[280px] sm:w-[320px] md:w-[380px] lg:w-[400px] xl:w-[420px] 2xl:w-[420px]"
             onClick={(e) => handleSubmit(e, isLogIn ? 'login' : 'signup')} /> 
 
           {/* {isLoading && <Loader className="mt-4" />} */}

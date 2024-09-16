@@ -94,7 +94,7 @@ function Cart() {
                     <div className="flex flex-col gap-4 justify-center mx-auto">
                         <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-16">SHOPPING BAG</h1>
 
-                        {message && <div className="text-center font-semibold text-[#426e1d] mb-16">{message}</div>}
+                        {message && <div className="text-center font-semibold text-[#6e993b] mb-16">{message}</div>}
 
                         {cartItems.map((item) => (
                         <div key={item.product_id} className="flex items-start pb-6 border-b justify-between">
@@ -129,7 +129,7 @@ function Cart() {
                         <h3 className="text-xl font-semibold text-[#3a3a3a]">
                         Total Price: ₹{getTotalPrice()}
                         </h3>
-                        <button className="mt-2 bg-[#53742c] hover:bg-[#466325] text-white px-4 py-2 rounded-full text-md">
+                        <button className="mt-2 bg-[#6e993b] hover:bg-[#5e8332] text-white px-4 py-2 rounded-full text-md">
                             Proceed to Checkout
                         </button>
                     </div>

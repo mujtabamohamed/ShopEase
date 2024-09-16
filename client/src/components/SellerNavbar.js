@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-
+import { Link } from 'react-router-dom';
 import { UserRound } from 'lucide-react';
 
 
@@ -41,9 +41,14 @@ function SellerNavbar() {
     <nav className="p-4 bg-[#fff] relative">
         <div className="container mx-auto flex justify-between items-center">
         
-            <div className="ml-16">
-                <h1 className="text-[24px] font-work_sans font-bold text-[#53742c]">SHOPEASE</h1>
+            <div className="ml-16 flex">
+                <img 
+                    className="mr-2" 
+                    src="/ShopEase.png" 
+                    alt="ShopEase Logo" 
+                    width={35} />
             </div>
+            <h1 className="text-[28px] font-work_sans font-bold text-[#6e993b]">ShopEase</h1>
 
             <ul className="flex space-x-4 font-inter font-medium text-[#3a3a3a] ml-auto mr-16">
 

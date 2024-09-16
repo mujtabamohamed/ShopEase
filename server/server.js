@@ -191,7 +191,7 @@ app.delete('/dashboard/delete/:user_id/:product_id', async (req, res) => {
   
     try {
       const result = await pool.query(
-        'DELETE FROM products WHERE user_id = $1 AND id = $2',
+        'DELETE FROM products WHERE user_id = $1 AND id = $2 RETURNING *',
         [user_id, product_id]
       );
   

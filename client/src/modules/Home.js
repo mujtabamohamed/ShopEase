@@ -69,20 +69,7 @@ function Home() {
   return (
     <div className="bg-[#fff] text-gray-100 min-h-screen">
 
-      {message && <div className="text-right mr-10 font-semibold text-[#426e1d]">{message}</div>}
-
-      {/* Hero Section */}
-      <section className="py-20 text-center bg-[#fff]">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-bold mt-20 mb-4 text-[#3a3a3a]">Welcome</h2>
-          <p className="text-[#8a8a8a] mb-6">Explore our collection of the latest products</p>
-
-          <button
-            className="bg-[#53742c] hover:bg-[#466325] text-white px-4 py-3 rounded-full text-lg">
-            Shop Now
-          </button>
-        </div>
-      </section>
+      {message && <div className="text-right mr-10 font-semibold text-[#6e993b]">{message}</div>}
 
       {/* Products Section */}
       <section id="products" className="py-20 bg-[#fff]">

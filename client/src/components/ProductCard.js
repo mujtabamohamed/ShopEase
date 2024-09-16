@@ -24,7 +24,7 @@ function ProductCard({ productId, productName, price, description, imageUrl, han
       <p className="text-sm text-[#707070] text-left">{description}</p>
 
       <button 
-        className="mt-3 text-[15px] font-medium bg-[#53742c] hover:bg-[#3d5721] text-white px-4 py-2 rounded-full self-start"
+        className="mt-3 text-[15px] font-medium bg-[#6e993b] hover:bg-[#5e8332] text-white px-4 py-2 rounded-full self-start"
         onClick={() => handleAddToCart(productId)}>        
         Add to Cart
       </button>

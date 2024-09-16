@@ -92,7 +92,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
   
 
     return (
-      <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm">
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
         <div className="bg-[#ffffff] border border-[#eeeeee] px-10 py-6 rounded-xl shadow-lg xs:w-[320px] xs:py-4 sm:w-[480px] md:w-[540px]">
           <button 
               className="relative left-128 bottom-6 focus:outline-none 
@@ -173,7 +173,7 @@ function Modal({ mode, setShowModal, sellerProduct, fetchProducts }) {
               onChange={(e) => setData({ ...data, imageurl: e.target.value })} />
             
             <input 
-              className="bg-[#53742c] hover:bg-[#466325] text-white text-md font-semibold rounded-full w-full mt-10 mb-4 py-2 
+              className="bg-[#6e993b] hover:bg-[#5e8332] text-white text-md font-semibold rounded-full w-full mt-10 mb-4 py-2 
               cursor-pointer transition duration-300 hover:opacity-85 border-none" 
               value={mode} type="submit" onClick={editMode ? editData : postData} />
           </form>

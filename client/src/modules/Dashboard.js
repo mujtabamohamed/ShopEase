@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 
 import Modal from '../components/Modal';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 import { Trash2 } from 'lucide-react';
 
@@ -19,6 +20,9 @@ function Dashboard() {
     const [modalMode, setModalMode] = useState(null);
     const [sellerProducts, setSellerProducts] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
 
     const navigate = useNavigate();
 
@@ -73,11 +77,12 @@ function Dashboard() {
 
 
 // Delete seller product  
-    async function deleteProduct(productId) {
+    async function confirmDeleteProduct(product_id) {
         // console.log("Removing product ID:", productId);
+        if (!productToDelete) return;
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/delete/${user_id}/${productId}`,{
+            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/dashboard/delete/${user_id}/${product_id}`,{
               method: "DELETE",
               headers: { 'Content-Type': 'application/json' },
           });
@@ -86,6 +91,7 @@ function Dashboard() {
             console.log("Product deleted successfully");
             setMessage('Product was deleted successfully');
             fetchSellerProducts();
+
           } else {
                 console.log('Failed to delete product');
                 setMessage('Failed to delete product');
@@ -93,8 +99,15 @@ function Dashboard() {
           
         } catch (err) {
             console.error(err);
+
+        } finally {
+            setShowDeleteModal(false);  
+            setProductToDelete(null); 
         }
     }
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
  
     
     return (
@@ -109,6 +122,15 @@ function Dashboard() {
                     />
                 )}
 
+                {showDeleteModal && (
+                <DeleteConfirmModal
+                    setShowDeleteModal={setShowDeleteModal}
+                    confirmDelete={confirmDeleteProduct}
+                    productName={sellerProducts.find(p => p.product_id === productToDelete)?.product_name}
+                    productToDelete={productToDelete}
+                />
+            )}
+
             {/* Product Section */}
             <section className="py-20 text-center bg-[#fff]">
                 <div className="flex flex-col container mx-auto text-center">
@@ -117,7 +139,7 @@ function Dashboard() {
                         <h1 className="text-2xl text-[#3a3a3a] justify-center text-center font-bold mb-4">YOUR PRODUCTS</h1>
                         
                         <button 
-                            className="mb-20 w-64 mx-auto block bg-[#53742c] hover:bg-[#466325] text-white px-4 py-2 rounded-full text-lg"
+                            className="mb-20 w-64 mx-auto block bg-[#6e993b] hover:bg-[#5e8332] text-white px-4 py-2 rounded-full text-lg"
                             onClick={() => {
                                 setModalMode('create')
                                 setShowModal(true)}}>Add new products</button>
@@ -154,8 +176,9 @@ function Dashboard() {
                                 <Trash2 
                                     className=" stroke-[#3a3a3a] hover:stroke-[#000] cursor-pointer"
                                     onClick={() => {
-                                        console.log("Product ID to delete:", item.product_id);
-                                        deleteProduct(item.product_id)}}
+                                        setProductToDelete(item.product_id);
+                                        console.log(item.product_id)
+                                        setShowDeleteModal(true);}}
                                     width={"20"}
                                     height={"20"}/> 
                             </div>

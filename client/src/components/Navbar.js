@@ -39,8 +39,15 @@ function Navbar() {
         <nav className="p-4 bg-[#fff] relative">
             <div className="container mx-auto flex justify-between items-center">
             
-                <div className="ml-16">
-                    <h1 className="text-[24px] font-work_sans font-bold text-[#53742c]">SHOPEASE</h1>
+                <div className="ml-16 flex">
+                    <Link to="/">
+                        <img 
+                            className="mr-2" 
+                            src="/ShopEase.png" 
+                            alt="ShopEase Logo" 
+                            width={35} />
+                    </Link>
+                    <h1 className="text-[28px] font-work_sans font-bold text-[#6e993b]">ShopEase</h1>
                 </div>
 
                 <ul className="flex space-x-4 font-inter font-medium text-[#3a3a3a] ml-auto mr-16">
