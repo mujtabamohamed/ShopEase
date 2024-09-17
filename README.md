@@ -1,8 +1,6 @@
 <!--![Sign up](https://i.postimg.cc/c19dsbFZ/Chat-Logo.png)-->
 # ShopEase
 
-ChatWave is a real-time chat application that allows users to communicate instantly. The project is built with a modern tech stack to ensure a responsive and interactive user experience.
-
 ## Demo
 
 https://shopease-online.onrender.com/
